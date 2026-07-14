@@ -49,10 +49,16 @@ export function buildVerificationReport(args: {
     wrapsVerification,
     hintsVerification,
   } = args;
+  // Overall verdict: hinTS threshold signature verified AND a suffix path
+  // (Schnorr aggregate or WRAPS) verified.
+  const valid =
+    hintsVerification?.status === "verified" &&
+    (schnorrVerification?.status === "verified" || wrapsVerification?.status === "verified");
   return {
     fixturePath: parsedBlock.fixturePath,
     blockNumber: parsedBlock.blockNumber,
     blockRootHex: Buffer.from(blockRoot).toString("hex"),
+    valid,
     proofLayout: parsedBlock.proofLayout,
     bootstrapFound: bootstrapPublication !== null,
     bootstrapLedgerIdHex: bootstrapPublication?.ledgerIdHex,

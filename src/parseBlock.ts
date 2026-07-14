@@ -219,16 +219,22 @@ function decompressBlock(filePath: string, fileBytes: Buffer): Buffer {
   return gunzipSync(fileBytes);
 }
 
-export async function parseBlockFixture(fixturePath: string): Promise<ParsedBlockFixture> {
-  const absoluteFixturePath = path.resolve(fixturePath);
-  const compressedBytes = readFileSync(absoluteFixturePath);
-  const blockBytes = decompressBlock(absoluteFixturePath, compressedBytes);
+/** Decompress by magic bytes (gzip / zstd), or pass raw block bytes through. */
+function autoDecompress(bytes: Buffer): Buffer {
+  if (bytes.length >= 2 && bytes[0] === 0x1f && bytes[1] === 0x8b) {
+    return gunzipSync(bytes); // gzip
+  }
+  if (bytes.length >= 4 && bytes[0] === 0x28 && bytes[1] === 0xb5 && bytes[2] === 0x2f && bytes[3] === 0xfd) {
+    return Buffer.from(zstdDecompress(bytes)); // zstd
+  }
+  return bytes; // already-decompressed block
+}
 
+async function parseDecompressed(blockBytes: Buffer, source: string): Promise<ParsedBlockFixture> {
   const items = scanBlockItems(blockBytes);
   const { blockHeader, blockFooter, blockProof, blockSignature } = await parseItems(items);
-
   return {
-    fixturePath: absoluteFixturePath,
+    fixturePath: source,
     blockNumber: longToString(blockHeader.number),
     items,
     blockHeader,
@@ -237,4 +243,16 @@ export async function parseBlockFixture(fixturePath: string): Promise<ParsedBloc
     blockSignature,
     proofLayout: classifyProofLayout(blockSignature),
   };
+}
+
+/** Parse a block from in-memory bytes (gzip/zstd-compressed or raw). */
+export async function parseBlock(bytes: Buffer): Promise<ParsedBlockFixture> {
+  return parseDecompressed(autoDecompress(bytes), "<bytes>");
+}
+
+export async function parseBlockFixture(fixturePath: string): Promise<ParsedBlockFixture> {
+  const absoluteFixturePath = path.resolve(fixturePath);
+  const compressedBytes = readFileSync(absoluteFixturePath);
+  const blockBytes = decompressBlock(absoluteFixturePath, compressedBytes);
+  return parseDecompressed(blockBytes, absoluteFixturePath);
 }

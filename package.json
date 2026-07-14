@@ -8,12 +8,24 @@
     "url": "git+https://github.com/hiero-hackers/hiero-block-verifier-js.git"
   },
   "type": "module",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
   "scripts": {
     "verify": "tsx src/index.ts",
     "verify:block0": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz",
     "verify:block467": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz fixtures/CN_0_73_TSS_WRAPS/467.blk.gz",
     "verify:all": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz fixtures/CN_0_73_TSS_WRAPS/1.blk.gz fixtures/CN_0_73_TSS_WRAPS/2.blk.gz fixtures/CN_0_73_TSS_WRAPS/3.blk.gz fixtures/CN_0_73_TSS_WRAPS/4.blk.gz fixtures/CN_0_73_TSS_WRAPS/466.blk.gz fixtures/CN_0_73_TSS_WRAPS/467.blk.gz",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@noble/curves": "^2.0.1",
