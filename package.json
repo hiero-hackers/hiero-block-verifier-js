@@ -17,7 +17,7 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["dist"],
+  "files": ["dist", "proto"],
   "scripts": {
     "verify": "tsx src/index.ts",
     "verify:block0": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz",
