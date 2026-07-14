@@ -154,3 +154,29 @@ cd protobuf-sources
 
 To refresh them against a newer block-node release, regenerate with that script and copy the
 output into `proto/generated/` (and `src/main/proto` into `proto/local/`).
+
+## Releasing (maintainers)
+
+Publishing to npm is automated by [`.github/workflows/release.yml`](.github/workflows/release.yml):
+it runs on a version tag, so the publish token stays in CI and never on a laptop.
+
+**One-time setup:** add the org-owned npm publish token as the repository secret
+**`TOKEN_BLOCK_VERIFIER_JS`** (Settings → Secrets and variables → Actions).
+
+**To cut a release:**
+
+1. Bump `version` in `package.json` and merge to `main`.
+2. Tag that commit and push it:
+
+   ```bash
+   git tag -s v0.2.0
+   git push origin v0.2.0
+   ```
+
+3. The Release workflow builds (`prepublishOnly` → `tsc`) and runs
+   `npm publish --provenance --access public`. The tag **must** match the
+   `package.json` version, or the run fails fast.
+
+The published tarball contains only the compiled `dist/` (`files: ["dist"]`) and
+carries [npm provenance](https://docs.npmjs.com/generating-provenance-statements),
+cryptographically linking it to the workflow run and commit.

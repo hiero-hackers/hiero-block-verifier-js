@@ -1,0 +1,53 @@
+# SPDX-License-Identifier: Apache-2.0
+# Publishes to npm on a version tag. The token lives ONLY as an org-owned repo
+# secret — never on a developer's machine — so publishing happens here in CI,
+# auditably. Provenance is attached via GitHub's OIDC (`id-token`), so the
+# published package is cryptographically linked to this workflow + commit.
+#
+# ⚠️ SECRET NAME: references `secrets.TOKEN_BLOCK_VERIFIER_JS`. Confirm the repo secret is
+# named exactly that, or edit the reference below to match.
+#
+# To release: bump the version in package.json, merge to main, then push a
+# matching tag (`git tag -s v0.2.0 && git push origin v0.2.0`).
+name: Release
+on:
+    push:
+        tags: ["v*.*.*"]
+    workflow_dispatch:
+
+permissions:
+    contents: read
+    id-token: write # npm provenance
+
+jobs:
+    publish:
+        name: Publish to npm
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+              with:
+                  persist-credentials: false
+            - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+              with:
+                  node-version: "22"
+                  registry-url: "https://registry.npmjs.org"
+            - run: npm ci
+
+            # A tag must match package.json's version — otherwise a mistaken tag
+            # would publish the wrong version. (Skipped on manual runs.)
+            - name: Tag matches package version
+              if: startsWith(github.ref, 'refs/tags/')
+              run: |
+                  pkg=$(node -p "require('./package.json').version")
+                  tag="${GITHUB_REF_NAME#v}"
+                  if [ "$pkg" != "$tag" ]; then
+                      echo "::error::tag v$tag does not match package.json version $pkg"
+                      exit 1
+                  fi
+                  echo "publishing $pkg"
+
+            # `prepublishOnly` builds dist/; `files` limits the tarball to dist/.
+            - name: Publish
+              run: npm publish --provenance --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.TOKEN_BLOCK_VERIFIER_JS }}
