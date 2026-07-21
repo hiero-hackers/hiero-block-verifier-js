@@ -154,3 +154,47 @@ cd protobuf-sources
 
 To refresh them against a newer block-node release, regenerate with that script and copy the
 output into `proto/generated/` (and `src/main/proto` into `proto/local/`).
+
+## Installing the package
+
+The package is published as `@hiero-hackers/hiero-block-verifier-js` on the
+[GitHub Packages npm registry](https://npm.pkg.github.com) (not public npm).
+Consumers need the scope routed there in `.npmrc`, plus a GitHub token with
+`read:packages`:
+
+```bash
+echo "@hiero-hackers:registry=https://npm.pkg.github.com" >> .npmrc
+npm install @hiero-hackers/hiero-block-verifier-js
+```
+
+## Releasing (maintainers)
+
+Publishing to GitHub Packages is automated by
+[`.github/workflows/release.yml`](.github/workflows/release.yml): it runs on a
+version tag and authenticates with the workflow's own `GITHUB_TOKEN` — there is
+no publish-token secret to provision.
+
+**To cut a release:**
+
+1. Bump `version` in `package.json` and merge to `main`.
+2. Tag that commit and push it:
+
+   ```bash
+   git tag -s v0.2.0
+   git push origin v0.2.0
+   ```
+
+3. The Release workflow re-runs the gates (`typecheck`, `build`) on exactly the
+   tagged commit, attests build provenance, publishes, and then creates a
+   GitHub Release with auto-generated notes. The tag **must** match the
+   `package.json` version, or the run fails fast.
+
+The published tarball contains the compiled `dist/` and the vendored `proto/`
+definitions (`files: ["dist", "proto"]`). npm provenance is npmjs-only, so the
+workflow attaches a [GitHub build-provenance attestation](https://docs.github.com/en/actions/security-for-github-actions/using-artifact-attestations/using-artifact-attestations-to-establish-provenance-for-builds)
+instead — verify a downloaded tarball with
+`gh attestation verify <tgz> --repo hiero-hackers/hiero-block-verifier-js`.
+
+**Note on first publish:** GitHub Packages ignores `--access public` — the first
+published version lands **private**, and a maintainer must flip it once in the
+package settings (the workflow emits a warning with the link).

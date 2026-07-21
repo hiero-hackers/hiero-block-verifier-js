@@ -190,6 +190,9 @@ export interface VerificationReport {
   fixturePath: string;
   blockNumber: string;
   blockRootHex: string;
+  /** Overall verdict: the hinTS threshold signature verified AND a suffix
+   *  (Schnorr aggregate or WRAPS) verified. */
+  valid: boolean;
   proofLayout: ProofLayout;
   bootstrapFound: boolean;
   bootstrapLedgerIdHex?: string;

@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Keep npm deps and CI actions current. Grouped so routine bumps arrive as a
+# couple of PRs, not one per dependency.
+version: 2
+updates:
+    - package-ecosystem: npm
+      directory: "/"
+      schedule:
+          interval: weekly
+      groups:
+          npm:
+              patterns: ["*"]
+
+    - package-ecosystem: github-actions
+      directory: "/"
+      schedule:
+          interval: weekly
+      groups:
+          actions:
+              patterns: ["*"]

@@ -1,5 +1,5 @@
 {
-  "name": "hiero-block-verifier-js",
+  "name": "@hiero-hackers/hiero-block-verifier-js",
   "version": "0.1.0",
   "description": "Pure JavaScript/TypeScript verifier for Hiero/Hedera block proofs (HIP-1056 / HIP-1200) using @noble/curves — no native binaries or WASM.",
   "license": "Apache-2.0",
@@ -7,13 +7,31 @@
     "type": "git",
     "url": "git+https://github.com/hiero-hackers/hiero-block-verifier-js.git"
   },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "type": "module",
+  "main": "dist/lib.js",
+  "types": "dist/lib.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["dist", "proto"],
   "scripts": {
     "verify": "tsx src/index.ts",
     "verify:block0": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz",
     "verify:block467": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz fixtures/CN_0_73_TSS_WRAPS/467.blk.gz",
     "verify:all": "tsx src/index.ts fixtures/CN_0_73_TSS_WRAPS/0.blk.gz fixtures/CN_0_73_TSS_WRAPS/1.blk.gz fixtures/CN_0_73_TSS_WRAPS/2.blk.gz fixtures/CN_0_73_TSS_WRAPS/3.blk.gz fixtures/CN_0_73_TSS_WRAPS/4.blk.gz fixtures/CN_0_73_TSS_WRAPS/466.blk.gz fixtures/CN_0_73_TSS_WRAPS/467.blk.gz",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@noble/curves": "^2.0.1",
