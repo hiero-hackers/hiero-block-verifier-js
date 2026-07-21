@@ -1,11 +1,17 @@
 {
-  "name": "hiero-block-verifier-js",
+  "name": "@hiero-hackers/hiero-block-verifier-js",
   "version": "0.1.0",
   "description": "Pure JavaScript/TypeScript verifier for Hiero/Hedera block proofs (HIP-1056 / HIP-1200) using @noble/curves — no native binaries or WASM.",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hiero-hackers/hiero-block-verifier-js.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "type": "module",
   "main": "dist/lib.js",

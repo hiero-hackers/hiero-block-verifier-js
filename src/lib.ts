@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Public library entry point — `import { verifyBlock } from "hiero-block-verifier-js"`.
+// Public library entry point — `import { verifyBlock } from "@hiero-hackers/hiero-block-verifier-js"`.
 // The CLI (src/index.ts) is separate; importing this module runs nothing.
 import { parseBlock } from "./parseBlock.js";
 import { computeBlockRoot } from "./computeBlockRoot.js";
