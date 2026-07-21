@@ -34,13 +34,13 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@noble/curves": "^2.0.1",
+    "@noble/curves": "^2.2.0",
     "fzstd": "^0.1.1",
-    "protobufjs": "^8.7.0"
+    "protobufjs": "^8.7.1"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
-    "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
   }
 }
